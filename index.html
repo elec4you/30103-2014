@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ข้อสอบปลายภาค - เทคโนโลยีงานเชื่อมงานผลิตภัณฑ์โลหะ</title>
+    <style>
+        /* ============================
+           CSS: Cyberpunk + Glassmorphism 
+           ============================ */
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&family=Share+Tech+Mono&display=swap');
+
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ff;
+            --bg-color: #050510;
+            --glass-bg: rgba(10, 10, 25, 0.6);
+            --glass-border: rgba(0, 243, 255, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(0, 243, 255, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(255, 0, 255, 0.08), transparent 25%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            
+            /* ป้องกันการคลุมดำข้อความเพื่อคัดลอก */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Scanline effect */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15) 1px, transparent 1px, transparent 2px);
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1), inset 0 0 10px rgba(255, 0, 255, 0.05);
+            position: relative;
+            z-index: 10;
+            margin: 40px 0;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Share Tech Mono', 'Sarabun', monospace;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .text-neon-blue { color: var(--neon-blue); text-shadow: 0 0 8px var(--neon-blue); }
+        .text-neon-pink { color: var(--neon-pink); text-shadow: 0 0 8px var(--neon-pink); }
+        
+        /* Dashboard Info Text */
+        .info-panel {
+            border-left: 4px solid var(--neon-pink);
+            padding-left: 15px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        .info-panel p { margin-bottom: 5px; }
+
+        /* Inputs & Buttons */
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            font-size: 1.2rem;
+            border-radius: 5px;
+            outline: none;
+            margin-bottom: 20px;
+            font-family: 'Share Tech Mono', 'Sarabun', monospace;
+            transition: box-shadow 0.3s ease;
+            
+            /* อนุญาตให้พิมพ์และเลือกข้อความในช่องกรอกชื่อได้ */
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        input[type="text"]:focus {
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: transparent;
+            color: #fff;
+            border: 2px solid var(--neon-blue);
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Share Tech Mono', 'Sarabun', monospace;
+        }
+
+        button:hover {
+            background: var(--neon-blue);
+            color: #000;
+            box-shadow: 0 0 20px var(--neon-blue);
+        }
+
+        button.btn-pink {
+            border-color: var(--neon-pink);
+        }
+
+        button.btn-pink:hover {
+            background: var(--neon-pink);
+            box-shadow: 0 0 20px var(--neon-pink);
+        }
+
+        /* Exam Section */
+        #timer {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.5rem;
+            color: var(--neon-pink);
+            text-align: right;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px var(--neon-pink);
+        }
+
+        .question-box {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--neon-blue);
+        }
+
+        .options-list {
+            list-style: none;
+        }
+
+        .option-item {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option-item:hover {
+            border-color: var(--neon-blue);
+            background: rgba(0, 243, 255, 0.1);
+        }
+
+        .option-item.selected {
+            border-color: var(--neon-pink);
+            background: rgba(255, 0, 255, 0.1);
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.3);
+        }
+
+        /* Screens Management */
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeIn 0.5s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Loader */
+        .loader {
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top: 4px solid var(--neon-blue);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- =======================
+             SCREEN 1: Intro
+             ======================= -->
+        <div id="intro-screen" class="screen active">
+            <h1 class="text-neon-blue" style="margin-bottom: 20px;">SYSTEM // INITIATED</h1>
+            
+            <div class="info-panel">
+                <p><strong>วิทยาลัยสารพัดช่างศรีสะเกษ</strong></p>
+                <p>สำนักงานคณะกรรมการการอาชีวศึกษา กระทรวงศึกษาธิการ</p>
+                <p class="text-neon-pink">ต้นฉบับข้อสอบปลายภาค ภาคเรียนที่ 1/2569 รูปแบบออนไลน์(QR-Code)</p>
+                <br>
+                <p><strong>รหัสวิชา:</strong> 30103-2014</p>
+                <p><strong>ชื่อวิชา:</strong> เทคโนโลยีงานเชื่อมงานผลิตภัณฑ์โลหะ ท-ป-น 1-6-3</p>
+                <p>นักศึกษาสาขาวิชา เทคนิคโลหะ ระดับชั้น ปวส.2</p>
+                <br>
+                <p><strong>ข้อสอบจำนวน:</strong> 40 ข้อ | <strong>คะแนนเต็ม:</strong> 40 คะแนน</p>
+                <p><strong>เวลา:</strong> 60 นาที</p>
+                <p><strong>ครูผู้ออกข้อสอบ:</strong> นายวิทยากร วรรณา</p>
+            </div>
+
+            <button onclick="showScreen('login-screen')">ถัดไป (NEXT) >></button>
+        </div>
+
+        <!-- =======================
+             SCREEN 2: Login / Name Input
+             ======================= -->
+        <div id="login-screen" class="screen">
+            <h2 class="text-neon-pink" style="margin-bottom: 20px;">USER // AUTHENTICATION</h2>
+            <p style="margin-bottom: 10px; color: #ccc;">กรุณากรอกชื่อ-นามสกุล ก่อนทำข้อสอบ</p>
+            <input type="text" id="studentName" placeholder="ระบุ ชื่อ-นามสกุล ของคุณที่นี่..." autocomplete="off">
+            <button class="btn-pink" onclick="startExam()">เริ่มทำข้อสอบ (START EXAM)</button>
+        </div>
+
+        <!-- =======================
+             SCREEN 3: Exam
+             ======================= -->
+        <div id="exam-screen" class="screen">
+            <div id="timer">00:00</div>
+            <h3 class="text-neon-blue" id="question-progress" style="text-align: left; margin-bottom: 10px;">Q: 1/40</h3>
+            
+            <div class="question-box" id="question-text">
+                <!-- คำถามจะถูกโหลดมาแสดงที่นี่ -->
+            </div>
+            
+            <ul class="options-list" id="options-container">
+                <!-- ตัวเลือกจะถูกโหลดมาแสดงที่นี่ -->
+            </ul>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button id="btn-next" onclick="nextQuestion()">ข้อถัดไป (NEXT)</button>
+                <button id="btn-submit" class="btn-pink" style="display: none;" onclick="submitExam()">ส่งคำตอบ (SUBMIT)</button>
+            </div>
+        </div>
+
+        <!-- =======================
+             SCREEN 4: Result & Saving
+             ======================= -->
+        <div id="result-screen" class="screen">
+            <h1 class="text-neon-blue">EXAM // COMPLETE</h1>
+            <div id="score-display" style="font-size: 2rem; text-align: center; margin: 20px 0; line-height: 1.5; text-shadow: 0 0 15px var(--neon-blue);"></div>
+            
+            <div id="saving-status" style="text-align: center;">
+                <div class="loader"></div>
+                <p class="text-neon-pink">กำลังอัปโหลดข้อมูลเข้าสู่ระบบ...</p>
+            </div>
+            
+            <div id="success-message" style="display: none; text-align: center; color: #0f0;">
+                <p>บันทึกข้อมูลเสร็จสมบูรณ์ ขอบคุณที่เข้าร่วมการทดสอบ</p>
+            </div>
+            <div id="error-message" style="display: none; text-align: center; color: #f00;">
+                <p>เกิดข้อผิดพลาดในการบันทึกข้อมูล โปรดแจ้งผู้คุมสอบ</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        /* ============================
+           JAVASCRIPT LOGIC
+           ============================ */
+
+        // 1. URL สำหรับส่งข้อมูลไปยัง Google Apps Script
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzHbJ2OucqdKOGKNTDJ3JQW8VdEl_py4A_24EmMSiNmil1P17pkkPcs8FMD_4JkVjI5Gw/exec";
+
+        // 2. ข้อมูลต้นฉบับข้อสอบ 40 ข้อ (อัปเดตเป็นวิชาเทคโนโลยีงานเชื่อมงานผลิตภัณฑ์โลหะ)
+        const rawQuestions = [
+            { q: "ข้อใดคือหน้าที่หลักของสารพอกหุ้ม (Flux) ในการเชื่อมไฟฟ้าระบบ SMAW", options: ["สร้างแก๊สปกคลุมบ่อหลอมละลายและเพิ่มความแข็งแรงให้แนวเชื่อม", "ลดความร้อนในขณะเชื่อมเพื่อป้องกันเหล็กบิดตัว", "ทำให้เกิดประกายไฟได้ง่ายขึ้นเมื่อเริ่มต้นอาร์ก", "เพิ่มความเร็วในการหลอมละลายของลวดเชื่อม"], ans: 0 },
+            { q: "ในการเชื่อม GMAW (MIG/MAG) สำหรับเหล็กกล้าคาร์บอน นิยมใช้แก๊สชนิดใดเป็นแก๊สปกคลุม", options: ["แก๊สอาร์กอนบริสุทธิ์", "แก๊สฮีเลียมบริสุทธิ์", "แก๊สคาร์บอนไดออกไซด์ หรือ แก๊สผสมอาร์กอนกับคาร์บอนไดออกไซด์", "แก๊สไนโตรเจนผสมแก๊สไฮโดรเจน"], ans: 2 },
+            { q: "การเชื่อม GTAW (TIG) อะลูมิเนียม ควรเลือกใช้กระแสไฟเชื่อมแบบใดจึงจะเหมาะสมที่สุด", options: ["กระแสตรงต่อขั้วลบ (DCEN)", "กระแสตรงต่อขั้วบวก (DCEP)", "กระแสสลับ (AC)", "กระแสตรงแบบพัลส์ความถี่สูง"], ans: 2 },
+            { q: "ข้อใดคือสาเหตุหลักที่ทำให้เกิดจุดบกพร่องแบบรูพรุน (Porosity) ในแนวเชื่อม", options: ["การใช้กระแสไฟเชื่อมต่ำเกินไป", "ระยะอาร์กสั้นเกินไป", "ชิ้นงานมีคราบน้ำมัน สนิม หรือความชื้นบริเวณรอยเชื่อม", "ความเร็วในการเดินลวดเชื่อมช้าเกินไป"], ans: 2 },
+            { q: "รอยแหว่ง (Undercut) ขอบแนวเชื่อม มักเกิดจากสาเหตุใด", options: ["การทำความสะอาดรอยเชื่อมไม่ดีพอ", "การใช้กระแสไฟเชื่อมสูงเกินไปและการเดินลวดเชื่อมเร็วเกินไป", "การเว้นช่องว่างของรอยต่อ (Root gap) กว้างเกินไป", "ลวดเชื่อมมีขนาดใหญ่กว่าชิ้นงานมากเกินไป"], ans: 1 },
+            { q: "บริเวณกระทบร้อน (Heat Affected Zone : HAZ) ในงานโลหะวิทยาการเชื่อม หมายถึงบริเวณใด", options: ["บริเวณเนื้อโลหะเชื่อมที่หลอมละลายและแข็งตัวใหม่", "บริเวณโลหะชิ้นงานที่ไม่หลอมละลายแต่โครงสร้างจุลภาคเปลี่ยนไปเนื่องจากความร้อน", "บริเวณรากรอยเชื่อมที่มีการซึมลึกสูงสุด", "บริเวณผิวหน้าของแนวเชื่อมที่สัมผัสกับบรรยากาศ"], ans: 1 },
+            { q: "สัญลักษณ์ท่าเชื่อม 3G ตามมาตรฐาน AWS หมายถึงการเชื่อมในลักษณะใด", options: ["ท่าราบ (Flat)", "ท่าขนานระดับ (Horizontal)", "ท่าตั้ง (Vertical)", "ท่าเหนือศีรษะ (Overhead)"], ans: 2 },
+            { q: "การตรวจสอบแบบไม่ทำลายสภาพ (NDT) ด้วยวิธีแทรกซึมด้วยสารเหลว (Penetrant Testing) เหมาะสำหรับหาข้อบกพร่องลักษณะใด", options: ["ข้อบกพร่องที่อยู่ลึกซึ้งในเนื้อโลหะ", "ข้อบกพร่องที่เปิดออกสู่ผิวหน้าของชิ้นงาน", "การวัดความหนาของแนวเชื่อม", "การหาความแข็งของบริเวณ HAZ"], ans: 1 },
+            { q: "การให้ความร้อนก่อนการเชื่อม (Preheating) สำหรับเหล็กกล้าคาร์บอนสูง มีจุดประสงค์หลักเพื่ออะไร", options: ["เพื่อลดอัตราการเย็นตัว ป้องกันการเกิดโครงสร้างมาร์เทนไซต์และรอยร้าว", "เพื่อเพิ่มการซึมลึกของแนวเชื่อมให้มากขึ้น", "เพื่อกำจัดสิ่งสกปรกที่ฝังอยู่ในเนื้อเหล็ก", "เพื่อทำให้เหล็กอ่อนตัวและดัดโค้งได้ง่ายขึ้น"], ans: 0 },
+            { q: "การอบคลายความเค้น (Post Weld Heat Treatment : PWHT) มีประโยชน์อย่างไรต่อโครงสร้างงานเชื่อม", options: ["เพิ่มความแข็งแรงทนทานต่อแรงดึงให้สูงขึ้นเป็นสองเท่า", "ลดความเค้นตกค้าง (Residual Stress) ที่เกิดขึ้นจากการหดตัวของแนวเชื่อม", "ป้องกันการเกิดสนิมบริเวณแนวเชื่อม", "ทำให้สีของแนวเชื่อมมีความสวยงามและสม่ำเสมอ"], ans: 1 },
+            { q: "กระบวนการเชื่อมแบบใดที่ใช้ฟลักซ์แบบเม็ดปกคลุมแนวเชื่อมและไม่มีแสงอาร์กปรากฏให้เห็นขณะทำการเชื่อม", options: ["FCAW (Flux Cored Arc Welding)", "SAW (Submerged Arc Welding)", "GMAW (Gas Metal Arc Welding)", "PAW (Plasma Arc Welding)"], ans: 1 },
+            { q: "ลวดเชื่อมฟลักซ์คอร์ (FCAW) มีข้อดีที่เหนือกว่าลวดเชื่อมตัน (Solid wire) อย่างไรเมื่อทำการเชื่อมกลางแจ้ง", options: ["ไม่ต้องใช้เครื่องเชื่อมขนาดใหญ่", "ราคาลวดเชื่อมถูกกว่า", "ลวดเชื่อมชนิดป้องกันตัวเอง (Self-shielded) สามารถต้านทานกระแสลมพัดได้ดีกว่า", "สามารถเชื่อมใต้น้ำได้โดยไม่ต้องมีอุปกรณ์เสริม"], ans: 2 },
+            { q: "สัญลักษณ์งานเชื่อมที่มีรูปสามเหลี่ยมอยู่ \"ด้านล่าง\" ของเส้นอ้างอิง (Reference line) หมายความว่าอย่างไร", options: ["ทำการเชื่อมด้านตรงข้ามลูกศร", "ทำการเชื่อมทั้งสองด้าน", "ทำการเชื่อมด้านที่ลูกศรชี้ (Arrow side)", "เชื่อมแบบเซาะร่องตัววี"], ans: 2 },
+            { q: "ค่าความสมมูลคาร์บอน (Carbon Equivalent : CE) ใช้สำหรับประเมินคุณสมบัติใดของเหล็กกล้า", options: ["ความสามารถในการทนต่อการกัดกร่อน", "ความสามารถในการนำไฟฟ้า", "ความสามารถในการเชื่อมได้ (Weldability) และแนวโน้มการเกิดรอยร้าวเย็น", "ความทนทานต่อแรงดึงของเหล็ก"], ans: 2 },
+            { q: "รอยร้าวร้อน (Hot Cracking) ในแนวเชื่อม มักมีสาเหตุหลักมาจากสิ่งใด", options: ["ไฮโดรเจนที่ละลายอยู่ในเนื้อโลหะ", "สิ่งเจือปนประเภทกำมะถันและฟอสฟอรัสในโลหะชิ้นงาน", "การเย็นตัวที่รวดเร็วเกินไปของชิ้นงาน", "การเลือกใช้ขั้วไฟเชื่อมผิดประเภท"], ans: 1 },
+            { q: "ปัญหา \"คาร์ไบด์พรีซิพิเตชัน (Carbide Precipitation)\" ในการเชื่อมสแตนเลส ทำให้เกิดผลเสียอย่างไร", options: ["ทำให้สแตนเลสสูญเสียความสามารถในการทนต่อการกัดกร่อนบริเวณรอยเชื่อม", "ทำให้เกิดจุดบกพร่องแบบรูพรุนจำนวนมาก", "ทำให้แนวเชื่อมมีความแข็งและเปราะแตกทันทีเมื่อเย็นตัว", "ทำให้สแตนเลสเปลี่ยนสถานะเป็นสารแม่เหล็ก"], ans: 0 },
+            { q: "เหตุใดการเชื่อมอะลูมิเนียมจึงต้องให้ความสำคัญกับการทำความสะอาดชั้นออกไซด์ที่ผิวก่อนเชื่อม", options: ["เพราะชั้นออกไซด์จะทำให้เกิดควันพิษขณะเชื่อม", "เพราะชั้นออกไซด์มีจุดหลอมเหลวสูงกว่าเนื้ออะลูมิเนียมมาก ทำให้หลอมละลายเข้ากันได้ยาก", "เพราะชั้นออกไซด์จะดูดซับความชื้นและทำให้ไฟฟ้าลัดวงจร", "เพราะชั้นออกไซด์จะทำให้เปลวอาร์กดับอยู่ตลอดเวลา"], ans: 1 },
+            { q: "การใช้แก๊สคาร์บอนไดออกไซด์ (CO2) ล้วนในการเชื่อม GMAW จะให้ลักษณะแนวเชื่อมเป็นอย่างไร", options: ["แนวเชื่อมแบนเรียบและมีการซึมลึกต่ำ", "แนวเชื่อมมีการซึมลึกสูง รูปร่างคล้ายระฆังคว่ำ แต่มีเม็ดโลหะกระเด็น (Spatter) มาก", "แนวเชื่อมสะอาด เงางาม และไม่มีรอยกระเด็นของโลหะเลย", "แนวเชื่อมมีลักษณะนูนสูงเป็นรูปครึ่งวงกลมและซึมลึกน้อย"], ans: 1 },
+            { q: "ค่าวัฏจักรการทำงาน (Duty Cycle) ของเครื่องเชื่อมที่ระบุว่า \"60% ที่ 200 แอมป์\" หมายถึงอะไร", options: ["สามารถเชื่อมที่กระแส 200 แอมป์ ได้ต่อเนื่อง 6 นาที และต้องพัก 4 นาที ในช่วงเวลา 10 นาที", "สามารถเชื่อมได้ต่อเนื่อง 60 นาที ที่กระแสสูงสุด 200 แอมป์", "เครื่องเชื่อมมีประสิทธิภาพการแปลงไฟ 60% ที่กระแส 200 แอมป์", "เครื่องเชื่อมจะใช้พลังงาน 60% เมื่อตั้งค่ากระแสไฟที่ 200 แอมป์"], ans: 0 },
+            { q: "อุปกรณ์จับยึด (Jigs and Fixtures) ในงานผลิตภัณฑ์โลหะ มีหน้าที่หลักเพื่อสิ่งใด", options: ["เพื่อความสวยงามของการนำเสนอชิ้นงาน", "เพื่อควบคุมขนาด ตำแหน่ง และป้องกันการบิดเสียรูปของชิ้นงานขณะประกอบและเชื่อม", "เพื่อช่วยลดอุณหภูมิของชิ้นงานให้เย็นตัวเร็วขึ้น", "เพื่อเพิ่มความแข็งแรงทางกลศาสตร์ให้กับรอยเชื่อม"], ans: 1 },
+            { q: "จุดบกพร่องแบบการซึมลึกไม่สมบูรณ์ (Lack of Penetration) มักเกิดในบริเวณใดของรอยต่อ", options: ["บริเวณผิวหน้าของแนวเชื่อม", "บริเวณขอบรอยต่อด้านบน", "บริเวณโคนรอยเชื่อม (Root) ของรอยต่อ", "บริเวณกึ่งกลางของเนื้อโลหะเชื่อมชั้นบนสุด"], ans: 2 },
+            { q: "การตรวจสอบงานเชื่อมด้วยรังสี (Radiographic Testing : RT) อาศัยหลักการใด", options: ["การสะท้อนกลับของคลื่นความถี่สูงเมื่อกระทบข้อบกพร่อง", "การทะลุทะลวงของรังสีเอกซ์หรือแกมมาผ่านชิ้นงานลงบนฟิล์ม", "การเหนี่ยวนำสนามแม่เหล็กไฟฟ้าบนผิวหน้าชิ้นงาน", "การวัดความต้านทานไฟฟ้าที่เปลี่ยนแปลงไปเมื่อมีรอยร้าว"], ans: 1 },
+            { q: "การทดสอบแรงกระแทกแบบชาร์ปี (Charpy V-Notch Impact Test) เป็นการทดสอบเพื่อหาค่าคุณสมบัติใดของวัสดุ", options: ["ความแข็ง (Hardness)", "ความเหนียวทนทานต่อแรงกระแทก (Toughness)", "ความต้านทานแรงดึง (Tensile Strength)", "ความสามารถในการยืดตัว (Elongation)"], ans: 1 },
+            { q: "กระบวนการเชื่อมแบบ Friction Stir Welding (FSW) มีลักษณะเด่นอย่างไร", options: ["เป็นการเชื่อมที่ใช้เลเซอร์เป็นแหล่งให้ความร้อนหลัก", "เป็นการเชื่อมที่โลหะไม่ถึงจุดหลอมเหลว (Solid-state process) โดยใช้การเสียดสีจากหัวหมุน", "เป็นการเชื่อมที่ต้องใช้แก๊สปกคลุมชนิดพิเศษในห้องสุญญากาศ", "เป็นการเชื่อมที่เหมาะกับโลหะที่มีความหนาเกิน 100 มิลลิเมตรเท่านั้น"], ans: 1 },
+            { q: "ข้อแตกต่างที่สำคัญระหว่างการเชื่อม Plasma Arc Welding (PAW) และ TIG คืออะไร", options: ["PAW ไม่ต้องใช้แก๊สปกคลุม", "PAW ใช้ขั้วอิเล็กโทรดชนิดสิ้นเปลือง", "PAW มีการบีบลำอาร์กผ่านหัวฉีด (Nozzle) ทำให้พลังงานความร้อนหนาแน่นกว่า", "PAW สามารถเชื่อมได้เฉพาะโลหะที่เป็นอะลูมิเนียมเท่านั้น"], ans: 2 },
+            { q: "การเชื่อมจุดด้วยความต้านทาน (Resistance Spot Welding) ปัจจัยใดที่ทำให้เกิดความร้อน ณ จุดเชื่อม", options: ["ความต้านทานไฟฟ้าของชิ้นงานบริเวณที่สัมผัสกันและกระแสไฟที่ไหลผ่าน", "เปลวไฟจากการเผาไหม้ของแก๊สเชื้อเพลิง", "ความถี่ของคลื่นอัลตราโซนิก", "การเหนี่ยวนำของสนามแม่เหล็กจากภายนอก"], ans: 0 },
+            { q: "ประสิทธิภาพการเติมเนื้อเชื่อม (Deposition Efficiency) หมายถึงอะไร", options: ["อัตราส่วนของเวลาที่อาร์กติดต่อเวลาการทำงานทั้งหมด", "อัตราความเร็วในการเดินลวดเชื่อมเทียบกับความหนาชิ้นงาน", "อัตราส่วนของน้ำหนักเนื้อโลหะเชื่อมที่เติมลงในชิ้นงานต่อน้ำหนักลวดเชื่อมที่ใช้ไปทั้งหมด", "อัตราการสิ้นเปลืองแก๊สปกคลุมต่อความยาวรอยเชื่อม 1 เมตร"], ans: 2 },
+            { q: "ตัวย่อ WPS ในระบบมาตรฐานการควบคุมคุณภาพงานเชื่อม ย่อมาจากอะไร", options: ["Welding Performance System", "Weld Penetration Standard", "Welding Procedure Specification", "Welder Personal Safety"], ans: 2 },
+            { q: "อันตรายทางชีวภาพที่สำคัญที่สุดจากการสูดดมควันเชื่อมสแตนเลสเป็นเวลานานคืออะไร", options: ["การเกิดโรคกระดูกพรุน", "การสะสมของสารเฮกซะวาเลนต์โครเมียม (Hexavalent Chromium) ซึ่งก่อมะเร็ง", "การเกิดภาวะเลือดจางจากการขาดเหล็ก", "การเกิดภาวะหูตึงจากเสียงอาร์ก"], ans: 1 },
+            { q: "เทคนิคการเชื่อมแบบก้าวถอยหลัง (Backstep Welding) มีวัตถุประสงค์หลักเพื่อสิ่งใด", options: ["เพื่อลดการเกิดรอยแหว่ง", "เพื่อลดปัญหาการบิดงอเสียรูปทรงของชิ้นงาน", "เพื่อเพิ่มการซึมลึกให้มากขึ้นในชิ้นงานหนา", "เพื่อความสวยงามของเกล็ดแนวเชื่อม"], ans: 1 },
+            { q: "รหัสลวดเชื่อม GMAW ตามมาตรฐาน AWS ระบุ \"ER70S-6\" ตัวเลข \"70\" หมายถึงอะไร", options: ["ความทนทานต่อแรงดึงต่ำสุด 70,000 ปอนด์ต่อตารางนิ้ว (psi)", "ปริมาณคาร์บอนในลวดเชื่อม 0.70%", "ตำแหน่งท่าเชื่อมที่สามารถเชื่อมได้ทั้งหมด 7 ท่า", "ความยาวลวดเชื่อม 70 เซนติเมตร"], ans: 0 },
+            { q: "ในการเชื่อม TIG โลหะหนา การเลือกใช้แก๊สผสมฮีเลียม (He) เข้ากับอาร์กอน (Ar) มีผลดีอย่างไร", options: ["ทำให้แนวเชื่อมเย็นตัวเร็วขึ้น", "ทำให้การเริ่มต้นอาร์กทำได้ง่ายขึ้นโดยใช้แรงดันไฟฟ้าต่ำ", "ให้ความร้อนและอุณหภูมิอาร์กสูงขึ้น ส่งผลให้การซึมลึกมากขึ้น", "ลดควันและก๊าซพิษที่เกิดจากการเชื่อม"], ans: 2 },
+            { q: "จุดประสงค์หลักของการเชื่อมพอกผิวแข็ง (Hardfacing) คืออะไร", options: ["เพื่อเพิ่มความสวยงามให้ชิ้นส่วนเครื่องจักรกล", "เพื่อป้องกันการกัดกร่อนจากสารเคมีรุนแรง", "เพื่อยืดอายุการใช้งานและลดการสึกหรอของชิ้นส่วนเครื่องจักรกล", "เพื่อใช้ซ่อมแซมรอยร้าวในโครงสร้างอาคาร"], ans: 2 },
+            { q: "ปรากฏการณ์การเบี่ยงเบนของอาร์ก (Arc Blow) มักเกิดขึ้นในเงื่อนไขใด", options: ["เมื่อเชื่อมงานด้วยกระแสสลับ (AC)", "เมื่อเชื่อมงานในบริเวณที่มีสนามแม่เหล็กรบกวน หรือเชื่อมใกล้ขอบชิ้นงานด้วยกระแสตรง (DC)", "เมื่อใช้แก๊สปกคลุมที่มีอัตราการไหลต่ำเกินไป", "เมื่อลวดเชื่อมมีความชื้นสูงเกินไป"], ans: 1 },
+            { q: "วิธีใดช่วยลดการเกิดเม็ดโลหะกระเด็น (Spatter) ในกระบวนการเชื่อม GMAW ได้ดีที่สุด", options: ["การเพิ่มระยะอาร์กให้ยาวขึ้นมากที่สุด", "การปรับตั้งค่าแรงดันไฟฟ้าและกระแสไฟเชื่อมให้สัมพันธ์กันอย่างถูกต้อง", "การเดินลวดเชื่อมด้วยความเร็วสูงสุด", "การลดอัตราการไหลของแก๊สปกคลุมให้เหลือน้อยที่สุด"], ans: 1 },
+            { q: "เทคนิคการเชื่อมแบบคีย์โฮล (Keyhole Technique) มักพบในกระบวนการเชื่อมแบบใด", options: ["SMAW", "SAW", "Plasma Arc Welding (PAW) และ Laser Beam Welding (LBW)", "Friction Stir Welding (FSW)"], ans: 2 },
+            { q: "แนวเชื่อมราก (Root Pass) มีความสำคัญอย่างไรในรอยต่อแบบเซาะร่องตัววี (V-Groove)", options: ["เป็นชั้นที่เชื่อมเพื่อตกแต่งความสวยงามของผิวรอยต่อ", "เป็นชั้นที่รับแรงอัดสูงสุดของโครงสร้าง", "เป็นแนวเชื่อมชั้นแรกที่กำหนดระดับการซึมลึกและรองรับการเชื่อมแนวถัดไป", "เป็นแนวเชื่อมที่ทำหน้าที่คลายความเค้นของรอยเชื่อม"], ans: 2 },
+            { q: "อุณหภูมิระหว่างแนวเชื่อม (Interpass Temperature) หมายถึงอุณหภูมิใด", options: ["อุณหภูมิของชิ้นงานก่อนเริ่มทำการเชื่อมแนวแรก", "อุณหภูมิสูงสุดของเปลวอาร์กขณะทำการเชื่อม", "อุณหภูมิของโลหะชิ้นงานก่อนที่จะทำการเชื่อมทับในแนวถัดไป (Pass ถัดไป)", "อุณหภูมิที่ใช้ในการอบชิ้นงานหลังจากการเชื่อมเสร็จสิ้น"], ans: 2 },
+            { q: "ข้อจำกัดที่สำคัญที่สุดของการตรวจสอบงานเชื่อมด้วยการตรวจพินิจ (Visual Testing : VT) คือข้อใด", options: ["ต้องใช้เครื่องมือที่มีราคาแพงมาก", "ไม่สามารถตรวจสอบข้อบกพร่องที่ซ่อนอยู่ภายในเนื้อโลหะเชื่อมได้", "ต้องใช้เวลาในการตรวจสอบนานกว่าวิธีอื่น", "ต้องทำโดยวิศวกรระดับสูงเท่านั้น"], ans: 1 }
+        ];
+
+        let questions = [];
+        let currentQuestion = 0;
+        let score = 0;
+        let userAnswers = [];
+        let studentName = "";
+        
+        // ตัวแปรระบบป้องกันการทุจริต
+        let isExamActive = false;
+        let cheatDeductions = 0;
+        let cheatCooldown = false;
+
+        // ตัวแปรจับเวลา (60 นาที = 3600 วินาที)
+        let timeRemaining = 60 * 60;
+        let timerInterval;
+
+        // ฟังก์ชันสำหรับสุ่มตำแหน่งสมาชิกใน Array (Fisher-Yates Shuffle)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // ฟังก์ชันเตรียมข้อมูลข้อสอบ (สุ่มข้อสอบ และ สุ่มตัวเลือก)
+        function prepareExamQuestions() {
+            let prepared = JSON.parse(JSON.stringify(rawQuestions));
+
+            prepared.forEach(q => {
+                let optionsWithFlag = q.options.map((optText, index) => ({
+                    text: optText,
+                    isCorrect: index === q.ans
+                }));
+
+                shuffleArray(optionsWithFlag);
+
+                q.options = optionsWithFlag.map(item => item.text);
+                q.ans = optionsWithFlag.findIndex(item => item.isCorrect);
+            });
+
+            shuffleArray(prepared);
+            return prepared;
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function startExam() {
+            const nameInput = document.getElementById('studentName').value.trim();
+            if (nameInput === "") {
+                alert("ACCESS DENIED: กรุณากรอกชื่อ-นามสกุล ก่อนเริ่มทำข้อสอบครับ");
+                return;
+            }
+            studentName = nameInput;
+
+            alert("⚠️ กฎกติกาและการป้องกันการทุจริต ⚠️\n\n1. ห้ามออกจากหน้าจอ หรือสลับไปแท็บ/โปรแกรมอื่น\n2. ห้ามคัดลอกข้อความใดๆ\n3. ห้ามบันทึกภาพหน้าจอ (Screen Capture / PrintScreen)\n\n*** หากฝ่าฝืน ระบบจะเตือนและ 'หักคะแนน 1 คะแนน' ต่อการทำผิด 1 ครั้งทันที ***\n\nกด OK เพื่อเริ่มการทดสอบ");
+
+            questions = prepareExamQuestions();
+            userAnswers = new Array(questions.length).fill(null);
+            currentQuestion = 0;
+
+            isExamActive = true;
+            cheatDeductions = 0;
+
+            showScreen('exam-screen');
+            loadQuestion(currentQuestion);
+            
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        // ==========================================
+        // ระบบตรวจจับการทุจริต (Anti-Cheating System)
+        // ==========================================
+        function handleCheating(reason) {
+            if (!isExamActive || cheatCooldown) return;
+            
+            cheatCooldown = true;
+            cheatDeductions++; // หัก 1 คะแนน
+            
+            alert(`🚨 ตรวจพบการทุจริต: ${reason}\n\nคุณถูกหัก 1 คะแนน!\n(โดนหักคะแนนสะสมไปแล้ว ${cheatDeductions} คะแนน)`);
+            
+            setTimeout(() => { cheatCooldown = false; }, 1000);
+        }
+
+        // 1. ดักจับการสลับแท็บเบราว์เซอร์
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+                handleCheating("ออกจากหน้าจอข้อสอบ (เปลี่ยนแท็บ)");
+            }
+        });
+
+        // 2. ดักจับการสลับไปเปิดโปรแกรมอื่น หรือย่อหน้าต่างเบราว์เซอร์
+        window.addEventListener("blur", () => {
+            handleCheating("สลับไปหน้าต่างหรือโปรแกรมอื่น");
+        });
+
+        // 3. ดักจับการคัดลอกข้อความ
+        document.addEventListener("copy", (e) => {
+            handleCheating("พยายามคัดลอกข้อความ");
+            e.preventDefault();
+        });
+
+        // 4. ป้องกันการคลิกขวา
+        document.addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+        });
+
+        // 5. ดักจับการกดปุ่ม PrintScreen (ล้างข้อมูล Clipboard ร่วมด้วย)
+        window.addEventListener("keyup", (e) => {
+            if (e.key === "PrintScreen") {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(""); // ล้าง Clipboard เพื่อไม่ให้วางรูปได้
+                }
+                handleCheating("พยายามบันทึกภาพหน้าจอ (PrintScreen)");
+            }
+        });
+
+        // 6. ดักจับคีย์ลัด Ctrl+C, PrintScreen และคีย์ลัด Screenshot ต่างๆ
+        window.addEventListener("keydown", (e) => {
+            // ดักจับ Ctrl+C / Cmd+C
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') {
+                handleCheating("พยายามคัดลอกข้อความโดยใช้คีย์ลัด");
+                e.preventDefault();
+            }
+
+            // ดักจับปุ่ม PrintScreen ในจังหวะ Down
+            if (e.key === "PrintScreen") {
+                handleCheating("พยายามบันทึกภาพหน้าจอ (PrintScreen)");
+                e.preventDefault();
+            }
+
+            // ดักจับคีย์ลัดแค็ปหน้าจอ: Win+Shift+S, Cmd+Shift+3/4/5 หรือ Ctrl+Shift+S
+            if ((e.key === 'S' || e.key === 's' || e.key === '3' || e.key === '4' || e.key === '5') && 
+                (e.shiftKey && (e.metaKey || e.ctrlKey))) {
+                handleCheating("พยายามใช้คีย์ลัดบันทึกภาพหน้าจอ");
+                e.preventDefault();
+            }
+        });
+        // ==========================================
+
+        function updateTimer() {
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                submitExam();
+                return;
+            }
+            timeRemaining--;
+            let m = Math.floor(timeRemaining / 60);
+            let s = timeRemaining % 60;
+            document.getElementById('timer').innerText = `TIME: ${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function loadQuestion(index) {
+            const qObj = questions[index];
+            document.getElementById('question-progress').innerText = `Q: ${index + 1}/${questions.length}`;
+            document.getElementById('question-text').innerText = qObj.q;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            qObj.options.forEach((opt, i) => {
+                const li = document.createElement('li');
+                li.className = 'option-item';
+                if (userAnswers[index] === i) li.classList.add('selected');
+                
+                li.innerText = opt;
+                li.onclick = () => selectOption(index, i, li);
+                optionsContainer.appendChild(li);
+            });
+
+            if (index === questions.length - 1) {
+                document.getElementById('btn-next').style.display = 'none';
+                document.getElementById('btn-submit').style.display = 'block';
+            } else {
+                document.getElementById('btn-next').style.display = 'block';
+                document.getElementById('btn-submit').style.display = 'none';
+            }
+        }
+
+        function selectOption(qIndex, optIndex, element) {
+            userAnswers[qIndex] = optIndex;
+            const siblings = element.parentElement.children;
+            for (let el of siblings) {
+                el.classList.remove('selected');
+            }
+            element.classList.add('selected');
+        }
+
+        function nextQuestion() {
+            if (userAnswers[currentQuestion] === null) {
+                alert("กรุณาเลือกคำตอบก่อนไปข้อถัดไปครับ");
+                return;
+            }
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                loadQuestion(currentQuestion);
+            }
+        }
+
+        function submitExam() {
+            if (userAnswers.includes(null) && timeRemaining > 0) {
+                if (!confirm("คุณยังทำข้อสอบไม่ครบทุกข้อ ต้องการส่งคำตอบเลยหรือไม่?")) return;
+            }
+
+            clearInterval(timerInterval);
+            isExamActive = false;
+            
+            // ตรวจคะแนนดิบ
+            let rawScore = 0;
+            userAnswers.forEach((ans, i) => {
+                if (ans === questions[i].ans) rawScore++;
+            });
+
+            // คำนวณคะแนนสุทธิหลังหักคะแนนทุจริต
+            score = rawScore - cheatDeductions;
+            if (score < 0) score = 0;
+
+            showScreen('result-screen');
+            
+            document.getElementById('score-display').innerHTML = `
+                คะแนนสุทธิ: ${score} / ${questions.length}<br>
+                <span style="font-size: 1.2rem; color: var(--neon-pink); display: block; margin-top: 15px;">
+                    (ทำได้ ${rawScore} คะแนน, หักจากการทุจริต ${cheatDeductions} คะแนน)
+                </span>
+            `;
+
+            sendDataToGAS(studentName, score);
+        }
+
+        function sendDataToGAS(name, score) {
+            const payload = JSON.stringify({ name: name, score: score });
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: payload
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('saving-status').style.display = 'none';
+                if (data.result === 'success') {
+                    document.getElementById('success-message').style.display = 'block';
+                } else {
+                    document.getElementById('error-message').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                document.getElementById('saving-status').style.display = 'none';
+                document.getElementById('error-message').style.display = 'block';
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
