@@ -268,7 +268,7 @@
                 <p><strong>ครูผู้ออกข้อสอบ:</strong> นายวิทยากร วรรณา</p>
             </div>
 
-            <div style="display: flex; gap: 10px; flex-direction: column;">
+            <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 30px;">
                 <button onclick="showScreen('login-screen')">ถัดไป เพื่อสอบ (NEXT) >></button>
                 <button class="btn-pink" onclick="fetchAndShowScores()">ดูคะแนนสอบ (VIEW SCORES)</button>
             </div>
@@ -314,11 +314,9 @@
             <div id="timer">00:00</div>
             <h3 class="text-neon-blue" id="question-progress" style="text-align: left; margin-bottom: 10px;">Q: 1/40</h3>
             
-            <div class="question-box" id="question-text">
-                </div>
+            <div class="question-box" id="question-text"></div>
             
-            <ul class="options-list" id="options-container">
-                </ul>
+            <ul class="options-list" id="options-container"></ul>
 
             <div style="display: flex; gap: 10px; margin-top: 20px;">
                 <button id="btn-next" onclick="nextQuestion()">ข้อถัดไป (NEXT)</button>
@@ -350,10 +348,9 @@
            JAVASCRIPT LOGIC
            ============================ */
 
-        // 1. URL สำหรับส่ง/รับข้อมูลไปยัง Google Apps Script
+        // URL GAS ของคุณ
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbziPhCk60UsPcPs15zcKXuiplG9k9oQTmwdR6iUbLEndFQsBC7ftH5iNHd_BbgUAjcJ/exec";
 
-        // 2. ข้อมูลต้นฉบับข้อสอบ 40 ข้อ (อัปเดตเป็นวิชาเทคโนโลยีงานเชื่อมงานผลิตภัณฑ์โลหะ)
         const rawQuestions = [
             { q: "ข้อใดคือหน้าที่หลักของสารพอกหุ้ม (Flux) ในการเชื่อมไฟฟ้าระบบ SMAW", options: ["สร้างแก๊สปกคลุมบ่อหลอมละลายและเพิ่มความแข็งแรงให้แนวเชื่อม", "ลดความร้อนในขณะเชื่อมเพื่อป้องกันเหล็กบิดตัว", "ทำให้เกิดประกายไฟได้ง่ายขึ้นเมื่อเริ่มต้นอาร์ก", "เพิ่มความเร็วในการหลอมละลายของลวดเชื่อม"], ans: 0 },
             { q: "ในการเชื่อม GMAW (MIG/MAG) สำหรับเหล็กกล้าคาร์บอน นิยมใช้แก๊สชนิดใดเป็นแก๊สปกคลุม", options: ["แก๊สอาร์กอนบริสุทธิ์", "แก๊สฮีเลียมบริสุทธิ์", "แก๊สคาร์บอนไดออกไซด์ หรือ แก๊สผสมอาร์กอนกับคาร์บอนไดออกไซด์", "แก๊สไนโตรเจนผสมแก๊สไฮโดรเจน"], ans: 2 },
@@ -379,4 +376,296 @@
             { q: "การตรวจสอบงานเชื่อมด้วยรังสี (Radiographic Testing : RT) อาศัยหลักการใด", options: ["การสะท้อนกลับของคลื่นความถี่สูงเมื่อกระทบข้อบกพร่อง", "การทะลุทะลวงของรังสีเอกซ์หรือแกมมาผ่านชิ้นงานลงบนฟิล์ม", "การเหนี่ยวนำสนามแม่เหล็กไฟฟ้าบนผิวหน้าชิ้นงาน", "การวัดความต้านทานไฟฟ้าที่เปลี่ยนแปลงไปเมื่อมีรอยร้าว"], ans: 1 },
             { q: "การทดสอบแรงกระแทกแบบชาร์ปี (Charpy V-Notch Impact Test) เป็นการทดสอบเพื่อหาค่าคุณสมบัติใดของวัสดุ", options: ["ความแข็ง (Hardness)", "ความเหนียวทนทานต่อแรงกระแทก (Toughness)", "ความต้านทานแรงดึง (Tensile Strength)", "ความสามารถในการยืดตัว (Elongation)"], ans: 1 },
             { q: "กระบวนการเชื่อมแบบ Friction Stir Welding (FSW) มีลักษณะเด่นอย่างไร", options: ["เป็นการเชื่อมที่ใช้เลเซอร์เป็นแหล่งให้ความร้อนหลัก", "เป็นการเชื่อมที่โลหะไม่ถึงจุดหลอมเหลว (Solid-state process) โดยใช้การเสียดสีจากหัวหมุน", "เป็นการเชื่อมที่ต้องใช้แก๊สปกคลุมชนิดพิเศษในห้องสุญญากาศ", "เป็นการเชื่อมที่เหมาะกับโลหะที่มีความหนาเกิน 100 มิลลิเมตรเท่านั้น"], ans: 1 },
-            { q: "ข้อแตกต่างที่สำคัญระหว่างการเชื่อม Plasma Arc Welding (PAW) และ TIG คืออะไร", options: ["PAW ไม่ต้องใช้แก๊สปกคลุม", "PAW ใช้ขั้วอิเล็กโทรดชนิดสิ้นเปลือง", "PAW มีการบี
+            { q: "ข้อแตกต่างที่สำคัญระหว่างการเชื่อม Plasma Arc Welding (PAW) และ TIG คืออะไร", options: ["PAW ไม่ต้องใช้แก๊สปกคลุม", "PAW ใช้ขั้วอิเล็กโทรดชนิดสิ้นเปลือง", "PAW มีการบีบลำอาร์กผ่านหัวฉีด (Nozzle) ทำให้พลังงานความร้อนหนาแน่นกว่า", "PAW สามารถเชื่อมได้เฉพาะโลหะที่เป็นอะลูมิเนียมเท่านั้น"], ans: 2 },
+            { q: "การเชื่อมจุดด้วยความต้านทาน (Resistance Spot Welding) ปัจจัยใดที่ทำให้เกิดความร้อน ณ จุดเชื่อม", options: ["ความต้านทานไฟฟ้าของชิ้นงานบริเวณที่สัมผัสกันและกระแสไฟที่ไหลผ่าน", "เปลวไฟจากการเผาไหม้ของแก๊สเชื้อเพลิง", "ความถี่ของคลื่นอัลตราโซนิก", "การเหนี่ยวนำของสนามแม่เหล็กจากภายนอก"], ans: 0 },
+            { q: "ประสิทธิภาพการเติมเนื้อเชื่อม (Deposition Efficiency) หมายถึงอะไร", options: ["อัตราส่วนของเวลาที่อาร์กติดต่อเวลาการทำงานทั้งหมด", "อัตราความเร็วในการเดินลวดเชื่อมเทียบกับความหนาชิ้นงาน", "อัตราส่วนของน้ำหนักเนื้อโลหะเชื่อมที่เติมลงในชิ้นงานต่อน้ำหนักลวดเชื่อมที่ใช้ไปทั้งหมด", "อัตราการสิ้นเปลืองแก๊สปกคลุมต่อความยาวรอยเชื่อม 1 เมตร"], ans: 2 },
+            { q: "ตัวย่อ WPS ในระบบมาตรฐานการควบคุมคุณภาพงานเชื่อม ย่อมาจากอะไร", options: ["Welding Performance System", "Weld Penetration Standard", "Welding Procedure Specification", "Welder Personal Safety"], ans: 2 },
+            { q: "อันตรายทางชีวภาพที่สำคัญที่สุดจากการสูดดมควันเชื่อมสแตนเลสเป็นเวลานานคืออะไร", options: ["การเกิดโรคกระดูกพรุน", "การสะสมของสารเฮกซะวาเลนต์โครเมียม (Hexavalent Chromium) ซึ่งก่อมะเร็ง", "การเกิดภาวะเลือดจางจากการขาดเหล็ก", "การเกิดภาวะหูตึงจากเสียงอาร์ก"], ans: 1 },
+            { q: "เทคนิคการเชื่อมแบบก้าวถอยหลัง (Backstep Welding) มีวัตถุประสงค์หลักเพื่อสิ่งใด", options: ["เพื่อลดการเกิดรอยแหว่ง", "เพื่อลดปัญหาการบิดงอเสียรูปทรงของชิ้นงาน", "เพื่อเพิ่มการซึมลึกให้มากขึ้นในชิ้นงานหนา", "เพื่อความสวยงามของเกล็ดแนวเชื่อม"], ans: 1 },
+            { q: "รหัสลวดเชื่อม GMAW ตามมาตรฐาน AWS ระบุ \"ER70S-6\" ตัวเลข \"70\" หมายถึงอะไร", options: ["ความทนทานต่อแรงดึงต่ำสุด 70,000 ปอนด์ต่อตารางนิ้ว (psi)", "ปริมาณคาร์บอนในลวดเชื่อม 0.70%", "ตำแหน่งท่าเชื่อมที่สามารถเชื่อมได้ทั้งหมด 7 ท่า", "ความยาวลวดเชื่อม 70 เซนติเมตร"], ans: 0 },
+            { q: "ในการเชื่อม TIG โลหะหนา การเลือกใช้แก๊สผสมฮีเลียม (He) เข้ากับอาร์กอน (Ar) มีผลดีอย่างไร", options: ["ทำให้แนวเชื่อมเย็นตัวเร็วขึ้น", "ทำให้การเริ่มต้นอาร์กทำได้ง่ายขึ้นโดยใช้แรงดันไฟฟ้าต่ำ", "ให้ความร้อนและอุณหภูมิอาร์กสูงขึ้น ส่งผลให้การซึมลึกมากขึ้น", "ลดควันและก๊าซพิษที่เกิดจากการเชื่อม"], ans: 2 },
+            { q: "จุดประสงค์หลักของการเชื่อมพอกผิวแข็ง (Hardfacing) คืออะไร", options: ["เพื่อเพิ่มความสวยงามให้ชิ้นส่วนเครื่องจักรกล", "เพื่อป้องกันการกัดกร่อนจากสารเคมีรุนแรง", "เพื่อยืดอายุการใช้งานและลดการสึกหรอของชิ้นส่วนเครื่องจักรกล", "เพื่อใช้ซ่อมแซมรอยร้าวในโครงสร้างอาคาร"], ans: 2 },
+            { q: "ปรากฏการณ์การเบี่ยงเบนของอาร์ก (Arc Blow) มักเกิดขึ้นในเงื่อนไขใด", options: ["เมื่อเชื่อมงานด้วยกระแสสลับ (AC)", "เมื่อเชื่อมงานในบริเวณที่มีสนามแม่เหล็กรบกวน หรือเชื่อมใกล้ขอบชิ้นงานด้วยกระแสตรง (DC)", "เมื่อใช้แก๊สปกคลุมที่มีอัตราการไหลต่ำเกินไป", "เมื่อลวดเชื่อมมีความชื้นสูงเกินไป"], ans: 1 },
+            { q: "วิธีใดช่วยลดการเกิดเม็ดโลหะกระเด็น (Spatter) ในกระบวนการเชื่อม GMAW ได้ดีที่สุด", options: ["การเพิ่มระยะอาร์กให้ยาวขึ้นมากที่สุด", "การปรับตั้งค่าแรงดันไฟฟ้าและกระแสไฟเชื่อมให้สัมพันธ์กันอย่างถูกต้อง", "การเดินลวดเชื่อมด้วยความเร็วสูงสุด", "การลดอัตราการไหลของแก๊สปกคลุมให้เหลือน้อยที่สุด"], ans: 1 },
+            { q: "เทคนิคการเชื่อมแบบคีย์โฮล (Keyhole Technique) มักพบในกระบวนการเชื่อมแบบใด", options: ["SMAW", "SAW", "Plasma Arc Welding (PAW) และ Laser Beam Welding (LBW)", "Friction Stir Welding (FSW)"], ans: 2 },
+            { q: "แนวเชื่อมราก (Root Pass) มีความสำคัญอย่างไรในรอยต่อแบบเซาะร่องตัววี (V-Groove)", options: ["เป็นชั้นที่เชื่อมเพื่อตกแต่งความสวยงามของผิวรอยต่อ", "เป็นชั้นที่รับแรงอัดสูงสุดของโครงสร้าง", "เป็นแนวเชื่อมชั้นแรกที่กำหนดระดับการซึมลึกและรองรับการเชื่อมแนวถัดไป", "เป็นแนวเชื่อมที่ทำหน้าที่คลายความเค้นของรอยเชื่อม"], ans: 2 },
+            { q: "อุณหภูมิระหว่างแนวเชื่อม (Interpass Temperature) หมายถึงอุณหภูมิใด", options: ["อุณหภูมิของชิ้นงานก่อนเริ่มทำการเชื่อมแนวแรก", "อุณหภูมิสูงสุดของเปลวอาร์กขณะทำการเชื่อม", "อุณหภูมิของโลหะชิ้นงานก่อนที่จะทำการเชื่อมทับในแนวถัดไป (Pass ถัดไป)", "อุณหภูมิที่ใช้ในการอบชิ้นงานหลังจากการเชื่อมเสร็จสิ้น"], ans: 2 },
+            { q: "ข้อจำกัดที่สำคัญที่สุดของการตรวจสอบงานเชื่อมด้วยการตรวจพินิจ (Visual Testing : VT) คือข้อใด", options: ["ต้องใช้เครื่องมือที่มีราคาแพงมาก", "ไม่สามารถตรวจสอบข้อบกพร่องที่ซ่อนอยู่ภายในเนื้อโลหะเชื่อมได้", "ต้องใช้เวลาในการตรวจสอบนานกว่าวิธีอื่น", "ต้องทำโดยวิศวกรระดับสูงเท่านั้น"], ans: 1 },
+            { q: "ข้อใดคือสาเหตุหลักที่ทำให้เกิดข้อบกพร่องสิ่งฝังร่วมทังสเตน (Tungsten Inclusion) ในการเชื่อม GTAW (TIG)", options: ["การใช้อัตราการไหลของแก๊สปกคลุมสูงเกินไป", "ปลายแท่งอิเล็กโทรดทังสเตนสัมผัสกับบ่อหลอมละลายหรือลวดเติม", "การเลือกใช้กระแสไฟเชื่อมต่ำกว่ามาตรฐาน", "การเว้นระยะอาร์กห่างจากชิ้นงานมากเกินไป"], ans: 1 }
+        ];
+
+        let questions = [];
+        let currentQuestion = 0;
+        let score = 0;
+        let userAnswers = [];
+        let studentName = "";
+        
+        let isExamActive = false;
+        let cheatDeductions = 0;
+        let cheatCooldown = false;
+
+        let timeRemaining = 60 * 60;
+        let timerInterval;
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function prepareExamQuestions() {
+            let prepared = JSON.parse(JSON.stringify(rawQuestions));
+            prepared.forEach(q => {
+                let optionsWithFlag = q.options.map((optText, index) => ({
+                    text: optText,
+                    isCorrect: index === q.ans
+                }));
+                shuffleArray(optionsWithFlag);
+                q.options = optionsWithFlag.map(item => item.text);
+                q.ans = optionsWithFlag.findIndex(item => item.isCorrect);
+            });
+            shuffleArray(prepared);
+            return prepared;
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        // ==========================================
+        // ฟังก์ชันดึงคะแนนผ่าน SCRIPT_URL ที่มีอยู่แล้ว
+        // ==========================================
+        function fetchAndShowScores() {
+            showScreen('scores-screen');
+            document.getElementById('scores-loading').style.display = 'block';
+            document.getElementById('scores-content').style.display = 'none';
+            document.getElementById('scores-table-body').innerHTML = '';
+
+            // ดึงข้อมูลด้วยวิธี GET request จาก Web App URL ที่คุณผูกไว้
+            fetch(SCRIPT_URL)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('scores-loading').style.display = 'none';
+                document.getElementById('scores-content').style.display = 'block';
+                const tbody = document.getElementById('scores-table-body');
+                
+                // ตรวจสอบข้อมูลที่ได้รับ (สมมติว่า GAS ส่งกลับมาเป็น data.data ที่เป็น Array)
+                if(data && data.data && data.data.length > 0) {
+                    data.data.forEach((row, index) => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${row.name || 'ไม่ระบุชื่อ'}</td>
+                            <td class="text-neon-pink" style="font-weight:bold;">${row.score !== undefined ? row.score : '-'} / 40</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    // กรณีไม่มีข้อมูล หรือโค้ด GAS ยังไม่ได้เขียนส่วนการอ่านค่ากลับมา
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">ยังไม่มีข้อมูลผู้เข้าสอบในระบบ หรือรอการตั้งค่าฝั่ง GAS (ฟังก์ชัน doGet)</td></tr>';
+                }
+            })
+            .catch(error => {
+                document.getElementById('scores-loading').style.display = 'none';
+                document.getElementById('scores-content').style.display = 'block';
+                document.getElementById('scores-table-body').innerHTML = `
+                    <tr>
+                        <td colspan="3" style="text-align:center; color:#ff4444;">
+                            ไม่สามารถดึงข้อมูลได้<br>
+                            <span style="font-size:0.9rem;">(โปรดตรวจสอบว่าฝั่ง GAS มีฟังก์ชัน doGet(e) สำหรับคืนค่า JSON หรือไม่)</span>
+                        </td>
+                    </tr>`;
+                console.error('Error fetching scores:', error);
+            });
+        }
+        // ==========================================
+
+        function startExam() {
+            const nameInput = document.getElementById('studentName').value.trim();
+            if (nameInput === "") {
+                alert("ACCESS DENIED: กรุณากรอกชื่อ-นามสกุล ก่อนเริ่มทำข้อสอบครับ");
+                return;
+            }
+            studentName = nameInput;
+
+            alert("⚠️ กฎกติกาและการป้องกันการทุจริต ⚠️\n\n1. ห้ามออกจากหน้าจอ หรือสลับไปแท็บ/โปรแกรมอื่น\n2. ห้ามคัดลอกข้อความใดๆ\n3. ห้ามบันทึกภาพหน้าจอ (Screen Capture / PrintScreen)\n\n*** หากฝ่าฝืน ระบบจะเตือนและ 'หักคะแนน 1 คะแนน' ต่อการทำผิด 1 ครั้งทันที ***\n\nกด OK เพื่อเริ่มการทดสอบ");
+
+            questions = prepareExamQuestions();
+            userAnswers = new Array(questions.length).fill(null);
+            currentQuestion = 0;
+            cheatDeductions = 0;
+
+            showScreen('exam-screen');
+            loadQuestion(currentQuestion);
+            
+            timerInterval = setInterval(updateTimer, 1000);
+
+            setTimeout(() => {
+                isExamActive = true;
+            }, 1000);
+        }
+
+        // ระบบป้องกันทุจริต
+        function handleCheating(reason) {
+            if (!isExamActive || cheatCooldown) return;
+            cheatCooldown = true;
+            cheatDeductions++;
+            alert(`🚨 ตรวจพบการทุจริต: ${reason}\n\nคุณถูกหัก 1 คะแนน!\n(โดนหักคะแนนสะสมไปแล้ว ${cheatDeductions} คะแนน)`);
+            setTimeout(() => { cheatCooldown = false; }, 1000);
+        }
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) handleCheating("ออกจากหน้าจอข้อสอบ (เปลี่ยนแท็บ)");
+        });
+
+        window.addEventListener("blur", () => {
+            handleCheating("สลับไปหน้าต่างหรือโปรแกรมอื่น");
+        });
+
+        document.addEventListener("copy", (e) => {
+            handleCheating("พยายามคัดลอกข้อความ");
+            e.preventDefault();
+        });
+
+        document.addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+        });
+
+        window.addEventListener("keyup", (e) => {
+            if (e.key === "PrintScreen") {
+                if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText("");
+                handleCheating("พยายามบันทึกภาพหน้าจอ (PrintScreen)");
+            }
+        });
+
+        window.addEventListener("keydown", (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') {
+                handleCheating("พยายามคัดลอกข้อความโดยใช้คีย์ลัด");
+                e.preventDefault();
+            }
+            if (e.key === "PrintScreen") {
+                handleCheating("พยายามบันทึกภาพหน้าจอ (PrintScreen)");
+                e.preventDefault();
+            }
+            if ((e.key === 'S' || e.key === 's' || e.key === '3' || e.key === '4' || e.key === '5') && 
+                (e.shiftKey && (e.metaKey || e.ctrlKey))) {
+                handleCheating("พยายามใช้คีย์ลัดบันทึกภาพหน้าจอ");
+                e.preventDefault();
+            }
+        });
+
+        function updateTimer() {
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                submitExam();
+                return;
+            }
+            timeRemaining--;
+            let m = Math.floor(timeRemaining / 60);
+            let s = timeRemaining % 60;
+            document.getElementById('timer').innerText = `TIME: ${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function loadQuestion(index) {
+            const qObj = questions[index];
+            document.getElementById('question-progress').innerText = `Q: ${index + 1}/${questions.length}`;
+            document.getElementById('question-text').innerText = qObj.q;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            qObj.options.forEach((opt, i) => {
+                const li = document.createElement('li');
+                li.className = 'option-item';
+                if (userAnswers[index] === i) li.classList.add('selected');
+                
+                li.innerText = opt;
+                li.onclick = () => selectOption(index, i, li);
+                optionsContainer.appendChild(li);
+            });
+
+            if (index === questions.length - 1) {
+                document.getElementById('btn-next').style.display = 'none';
+                document.getElementById('btn-submit').style.display = 'block';
+            } else {
+                document.getElementById('btn-next').style.display = 'block';
+                document.getElementById('btn-submit').style.display = 'none';
+            }
+        }
+
+        function selectOption(qIndex, optIndex, element) {
+            userAnswers[qIndex] = optIndex;
+            const siblings = element.parentElement.children;
+            for (let el of siblings) {
+                el.classList.remove('selected');
+            }
+            element.classList.add('selected');
+        }
+
+        function nextQuestion() {
+            if (userAnswers[currentQuestion] === null) {
+                alert("กรุณาเลือกคำตอบก่อนไปข้อถัดไปครับ");
+                return;
+            }
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                loadQuestion(currentQuestion);
+            }
+        }
+
+        function submitExam() {
+            if (userAnswers.includes(null) && timeRemaining > 0) {
+                if (!confirm("คุณยังทำข้อสอบไม่ครบทุกข้อ ต้องการส่งคำตอบเลยหรือไม่?")) return;
+            }
+
+            clearInterval(timerInterval);
+            isExamActive = false;
+            
+            let rawScore = 0;
+            userAnswers.forEach((ans, i) => {
+                if (ans === questions[i].ans) rawScore++;
+            });
+
+            score = rawScore - cheatDeductions;
+            if (score < 0) score = 0;
+
+            showScreen('result-screen');
+            
+            document.getElementById('score-display').innerHTML = `
+                คะแนนสุทธิ: ${score} / ${questions.length}<br>
+                <span style="font-size: 1.2rem; color: var(--neon-pink); display: block; margin-top: 15px;">
+                    (ทำได้ ${rawScore} คะแนน, หักจากการทุจริต ${cheatDeductions} คะแนน)
+                </span>
+            `;
+
+            sendDataToGAS(studentName, score);
+        }
+
+        function sendDataToGAS(name, score) {
+            const payload = JSON.stringify({ name: name, score: score });
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: payload
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('saving-status').style.display = 'none';
+                if (data.result === 'success') {
+                    document.getElementById('success-message').style.display = 'block';
+                } else {
+                    document.getElementById('error-message').style.display = 'block';
+                }
+            })
+            .catch(error => {
+                document.getElementById('saving-status').style.display = 'none';
+                document.getElementById('error-message').style.display = 'block';
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
